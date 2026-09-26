@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ArrowRightIcon } from "lucide-react";
 
 import { Container } from "@/components/landing/container";
@@ -5,7 +6,7 @@ import { HeroText } from "@/components/landing/hero-text";
 import { HeroTexture } from "@/components/landing/hero-texture";
 import { Reveal } from "@/components/landing/reveal";
 import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export function Hero() {
@@ -14,9 +15,9 @@ export function Hero() {
       <HeroTexture />
       {/* The hero gets more air than the bands below it. Everywhere else uses
           the shared section rhythm. */}
-      <Container className="relative py-24 sm:py-32 lg:py-40">
+      <Container className="relative py-16 sm:py-24 lg:py-28">
         <div className="max-w-3xl">
-          <Badge variant="secondary">Now in public beta</Badge>
+          <Badge variant="secondary">No Login Required</Badge>
 
           <h1 className="mt-6 text-4xl font-semibold tracking-tight text-balance sm:text-5xl lg:text-6xl lg:leading-[1.06]">
             <HeroText text="Turn anything into a quiz worth taking." />
@@ -32,10 +33,16 @@ export function Hero() {
 
           <Reveal delay={0.45}>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <Button size="lg" className="h-11 px-5 text-[0.9375rem]">
+              <Link
+                href="/quiz"
+                className={cn(
+                  buttonVariants({ size: "lg" }),
+                  "h-11 px-5 text-[0.9375rem]"
+                )}
+              >
                 Start a quiz
                 <ArrowRightIcon data-icon="inline-end" />
-              </Button>
+              </Link>
               {/* A styled anchor rather than a Button rendering an anchor: this
                   one navigates, so it should keep link semantics. */}
               <a
@@ -48,12 +55,6 @@ export function Hero() {
                 See a live example
               </a>
             </div>
-          </Reveal>
-
-          <Reveal delay={0.55}>
-            <p className="mt-6 text-sm text-muted-foreground">
-              No credit card. Your first three quizzes are free.
-            </p>
           </Reveal>
         </div>
       </Container>

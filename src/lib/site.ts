@@ -7,8 +7,8 @@
 export const NAV_LINKS = [
   { label: "Features", href: "#features" },
   { label: "How it works", href: "#how-it-works" },
-  { label: "Try it", href: "#demo" },
-  { label: "FAQ", href: "#faq" },
+  { label: "Take a quiz", href: "/quiz" },
+  { label: "Brain teasers", href: "/teasers" },
 ] as const;
 
 export const STATS = [
@@ -145,14 +145,29 @@ export const FAQS = [
 export const FOOTER_COLUMNS = [
   {
     heading: "Product",
-    links: ["Features", "Try a quiz", "How it works", "Changelog"],
+    links: [
+      { label: "Features", href: "#features" },
+      { label: "How it works", href: "#how-it-works" },
+      { label: "Take a quiz", href: "/quiz" },
+      { label: "Brain teasers", href: "/teasers" },
+    ],
   },
   {
     heading: "Resources",
-    links: ["Question bank guide", "Quiz templates", "Help centre", "Status"],
+    links: [
+      { label: "Question bank guide", href: "#" },
+      { label: "Quiz templates", href: "#" },
+      { label: "Help centre", href: "#" },
+      { label: "Status", href: "#" },
+    ],
   },
   {
     heading: "Company",
-    links: ["About", "Blog", "Careers", "Contact"],
+    links: [
+      { label: "About", href: "#" },
+      { label: "Blog", href: "#" },
+      { label: "Careers", href: "#" },
+      { label: "Contact", href: "#" },
+    ],
   },
 ] as const;

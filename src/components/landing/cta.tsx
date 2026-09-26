@@ -1,8 +1,9 @@
+import Link from "next/link";
 import { ArrowRightIcon } from "lucide-react";
 
 import { Container, Section } from "@/components/landing/container";
 import { Reveal } from "@/components/landing/reveal";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export function CallToAction() {
@@ -10,7 +11,7 @@ export function CallToAction() {
     <Section>
       <Container>
         <Reveal>
-          <div className="max-w-2xl border-t border-border pt-16">
+          <div className="max-w-2xl border-t border-border pt-12">
             <h2 className="text-3xl font-semibold tracking-tight text-balance sm:text-4xl sm:leading-tight">
               Find out what your group actually knows
             </h2>
@@ -19,10 +20,16 @@ export function CallToAction() {
               the kettle boils.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <Button size="lg" className="h-11 px-5 text-[0.9375rem]">
+              <Link
+                href="/quiz"
+                className={cn(
+                  buttonVariants({ size: "lg" }),
+                  "h-11 px-5 text-[0.9375rem]"
+                )}
+              >
                 Start a quiz
                 <ArrowRightIcon data-icon="inline-end" />
-              </Button>
+              </Link>
               {/* A styled anchor rather than a Button rendering an anchor: this
                   one navigates, so it should keep link semantics. */}
               <a

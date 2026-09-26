@@ -15,7 +15,7 @@ export function HowItWorks() {
           />
         </Reveal>
 
-        <ol className="mt-14 grid gap-10 sm:grid-cols-3 sm:gap-8">
+        <ol className="mt-10 grid gap-8 sm:grid-cols-3 sm:gap-6">
           {STEPS.map((step, index) => (
             <li key={step.title}>
               <Reveal delay={0.08 * (index + 1)}>

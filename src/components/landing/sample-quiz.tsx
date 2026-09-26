@@ -27,7 +27,7 @@ export function SampleQuiz() {
   return (
     <Section id="demo">
       <Container>
-        <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-20">
+        <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:gap-12">
           <Reveal>
             <SectionHeading
               eyebrow="Try it"
