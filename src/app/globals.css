@@ -160,3 +160,24 @@
     transform: none !important;
   }
 }
+
+/* The scan line that sweeps the PDF preview while questions are written.
+   It animates `top` on a zero-height element, so the line travels the full
+   height of whatever the preview is sized to rather than a fixed pixel count,
+   and the glow and the trail are children of it, so they cannot drift apart.
+   The pause at each end is what makes it read as a scanner rather than a
+   progress bar. */
+@keyframes scan-sweep {
+  0% {
+    top: 0%;
+  }
+  45% {
+    top: 100%;
+  }
+  55% {
+    top: 100%;
+  }
+  100% {
+    top: 0%;
+  }
+}

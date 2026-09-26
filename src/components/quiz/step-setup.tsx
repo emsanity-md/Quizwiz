@@ -3,6 +3,7 @@
 import * as React from "react";
 import { FileTextIcon, XIcon } from "lucide-react";
 
+import { PdfPreview } from "@/components/quiz/pdf-preview";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -165,6 +166,10 @@ export function StepSetup({
             <AlertDescription>{fileError}</AlertDescription>
           </Alert>
         ) : null}
+
+        {/* Page one of the document, so it is obvious before spending a minute of
+            generation that the right file was picked. */}
+        {file ? <PdfPreview file={file} className="mt-5 w-40" /> : null}
       </div>
 
       <div className="mt-8 flex flex-col gap-3 sm:flex-row">

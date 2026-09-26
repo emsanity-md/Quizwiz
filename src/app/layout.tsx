@@ -1,13 +1,27 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import localFont from "next/font/local";
 
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
-const geist = Geist({
-  subsets: ["latin"],
+/**
+ * Self-hosted rather than next/font/google.
+ *
+ * The generated @font-face came out with a mangled unicode-range — `U+??` where
+ * the latin subset's `U+0000-00FF` should be — which is invalid CSS, so browsers
+ * threw the rule away. The effect was invisible and total: the site rendered in
+ * the fallback face while the woff2 was downloaded and preloaded on every page
+ * and then never used. Same in dev and in a production build, so it was not a
+ * dev-server artefact.
+ *
+ * Geist is a variable font, so one file covers every weight. next/font/local
+ * emits no unicode-range at all, which is valid here: the file is the whole
+ * latin face, so there is nothing to subset.
+ */
+const geist = localFont({
+  src: "../fonts/Geist-Variable.woff2",
+  weight: "100 900",
   display: "swap",
-  weight: ["400", "600"],
   variable: "--font-sans",
 });
 
