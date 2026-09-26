@@ -161,7 +161,7 @@ export function QuizFlow() {
             <StepGenerating
               name={name}
               categoryId={categoryId}
-              fileName={file?.name ?? null}
+              file={file}
               done={progress.done}
               total={progress.total}
               batches={progress.batches}

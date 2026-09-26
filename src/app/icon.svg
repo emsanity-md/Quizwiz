@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" role="img" aria-label="Quizwiz">
+  <!--
+    The browser tab mark. Drawn as geometry rather than a text glyph, because a
+    text element renders with whatever font the browser happens to have and
+    favicons get cached for a long time.
+    The fill is the primary colour token, oklch(0.511 0.262 276.966), as hex.
+    No double hyphens allowed in here: SVG is parsed as strict XML, and an XML
+    comment containing one is a parse error rather than a comment.
+  -->
+  <rect width="24" height="24" rx="6" fill="#4f39f6" />
+  <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="#fff" stroke-width="3.2" />
+  <path d="M15 15 20 20" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" />
+</svg>

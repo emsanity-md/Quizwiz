@@ -1,12 +1,15 @@
 /**
  * Every string of landing page copy lives here so the page components stay
- * presentational. Swap the placeholder testimonials and `#` links for real
- * content as it exists.
+ * presentational. Swap the placeholder testimonials for real content as it
+ * exists.
+ *
+ * Copy for the pages the footer links to lives in src/lib/pages.
  */
 
+/** The landing page anchors are absolute: these links are also on other pages. */
 export const NAV_LINKS = [
-  { label: "Features", href: "#features" },
-  { label: "How it works", href: "#how-it-works" },
+  { label: "Features", href: "/#features" },
+  { label: "How it works", href: "/#how-it-works" },
   { label: "Take a quiz", href: "/quiz" },
   { label: "Brain teasers", href: "/teasers" },
 ] as const;
@@ -146,8 +149,8 @@ export const FOOTER_COLUMNS = [
   {
     heading: "Product",
     links: [
-      { label: "Features", href: "#features" },
-      { label: "How it works", href: "#how-it-works" },
+      { label: "Features", href: "/#features" },
+      { label: "How it works", href: "/#how-it-works" },
       { label: "Take a quiz", href: "/quiz" },
       { label: "Brain teasers", href: "/teasers" },
     ],
@@ -155,19 +158,9 @@ export const FOOTER_COLUMNS = [
   {
     heading: "Resources",
     links: [
-      { label: "Question bank guide", href: "#" },
-      { label: "Quiz templates", href: "#" },
-      { label: "Help centre", href: "#" },
-      { label: "Status", href: "#" },
-    ],
-  },
-  {
-    heading: "Company",
-    links: [
-      { label: "About", href: "#" },
-      { label: "Blog", href: "#" },
-      { label: "Careers", href: "#" },
-      { label: "Contact", href: "#" },
+      { label: "Question bank guide", href: "/guides/question-bank" },
+      { label: "Quiz templates", href: "/templates" },
+      { label: "Help centre", href: "/help" },
     ],
   },
 ] as const;
