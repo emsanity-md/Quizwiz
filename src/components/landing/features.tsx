@@ -35,7 +35,7 @@ export function Features() {
           />
         </Reveal>
 
-        <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map((feature, index) => {
             const Icon = ICONS[feature.icon];
 

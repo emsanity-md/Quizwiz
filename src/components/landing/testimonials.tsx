@@ -22,14 +22,14 @@ export function Testimonials() {
           />
         </Reveal>
 
-        <div className="mt-14 grid gap-10 sm:grid-cols-3 sm:gap-8">
+        <div className="mt-10 grid gap-8 sm:grid-cols-3 sm:gap-8">
           {TESTIMONIALS.map((testimonial, index) => (
             <Reveal key={testimonial.name} delay={0.08 * index} className="h-full">
               <figure className="flex h-full flex-col">
                 <blockquote className="text-pretty leading-relaxed">
                   {testimonial.quote}
                 </blockquote>
-                <figcaption className="mt-6 flex items-center gap-3">
+                <figcaption className="mt-5 flex items-center gap-3">
                   <span
                     aria-hidden
                     className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold text-muted-foreground"

@@ -13,7 +13,7 @@ export function Faq() {
   return (
     <Section id="faq">
       <Container>
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-20">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:gap-12">
           <Reveal>
             <SectionHeading
               eyebrow="FAQ"

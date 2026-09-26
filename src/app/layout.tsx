@@ -33,6 +33,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       suppressHydrationWarning
+      // globals.css sets scroll-behavior: smooth. This attribute is what lets
+      // Next keep that while still jumping instantly on a route change.
+      data-scroll-behavior="smooth"
       className={`${geist.variable} antialiased`}
     >
       <body className="flex min-h-dvh flex-col">
