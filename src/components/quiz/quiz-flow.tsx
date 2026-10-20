@@ -2,7 +2,7 @@
 
 import * as React from "react";
 
-import { AgeGate } from "@/components/quiz/age-gate";
+import { Gate } from "@/components/quiz/gate";
 import { SETTLE_MS } from "@/components/quiz/generating-progress";
 import { QuizHeader } from "@/components/quiz/quiz-header";
 import { StepCategory } from "@/components/quiz/step-category";
@@ -147,7 +147,7 @@ export function QuizFlow({ verified: passed }: { verified: boolean }) {
         <div className="mx-auto max-w-3xl">
           {/* The gate wraps the quiz rather than the page, so the header and
               the theme toggle in it stay reachable while it is answered. */}
-          <AgeGate verified={verified} onVerified={() => setVerified(true)}>
+          <Gate verified={verified} onVerified={() => setVerified(true)}>
             {error ? (
               <Alert variant="destructive" className="mb-8">
                 <AlertDescription>{error}</AlertDescription>
@@ -211,7 +211,7 @@ export function QuizFlow({ verified: passed }: { verified: boolean }) {
             {phase === "review" && review ? (
               <StepReview review={review} onRestart={restart} />
             ) : null}
-          </AgeGate>
+          </Gate>
         </div>
       </main>
     </>

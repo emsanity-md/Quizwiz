@@ -1,33 +1,42 @@
 import { NextResponse } from "next/server";
 
-import { AGE_COOKIE, AGE_PROOF_TTL_MS, ageFromDateOfBirth } from "@/lib/quiz/age";
-import { issueAgeProof } from "@/lib/quiz/age-proof";
+import { ageFromDateOfBirth } from "@/lib/quiz/age";
+import {
+  GATE_COOKIE,
+  GATE_PROOF_TTL_MS,
+  issueGateProof,
+} from "@/lib/quiz/gate";
 import { clientKey, rateLimit } from "@/lib/quiz/rate-limit";
 
 export const runtime = "nodejs";
 
 const WINDOW_MS = 10 * 60 * 1000;
-/** Checking an age is cheap, but there is no reason to allow a guessing loop. */
+/** Checking is cheap, but there is no reason to allow a guessing loop. */
 const CHECKS_PER_WINDOW = 20;
 
-type Body = { dateOfBirth?: unknown };
+type Body = {
+  dateOfBirth?: unknown;
+  terms?: unknown;
+  privacy?: unknown;
+};
 
 /**
- * Checks a date of birth and hands back a signed proof that the browser has
- * passed the gate.
+ * Checks a date of birth and the two consents, then hands back a signed proof
+ * that this browser has passed the gate.
  *
- * The date itself goes nowhere else and is not put in the cookie: the proof
- * says only that the check happened and when.
+ * The date of birth goes nowhere else and is not put in the cookie: the proof
+ * says only that the check happened, when, and against which version of the
+ * terms.
  */
 export async function POST(request: Request) {
   const limit = rateLimit(
-    `age:${clientKey(request)}`,
+    `gate:${clientKey(request)}`,
     CHECKS_PER_WINDOW,
     WINDOW_MS,
   );
   if (!limit.ok) {
     return NextResponse.json(
-      { error: "Too many age checks from this connection. Try again shortly." },
+      { error: "Too many checks from this connection. Try again shortly." },
       { status: 429, headers: { "retry-after": String(limit.retryAfterSeconds) } },
     );
   }
@@ -39,6 +48,18 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { error: "Could not read that request." },
       { status: 400 },
+    );
+  }
+
+  // Both boxes have to be ticked. An unticked box is not a yes, and the
+  // server does not take the browser's word for it either.
+  if (body.terms !== true || body.privacy !== true) {
+    return NextResponse.json(
+      {
+        error:
+          "Please accept the Terms & Conditions and the Privacy Policy to continue.",
+      },
+      { status: 403 },
     );
   }
 
@@ -58,12 +79,12 @@ export async function POST(request: Request) {
     { headers: { "cache-control": "no-store" } },
   );
 
-  response.cookies.set(AGE_COOKIE, issueAgeProof(), {
+  response.cookies.set(GATE_COOKIE, issueGateProof(), {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: Math.floor(AGE_PROOF_TTL_MS / 1000),
+    maxAge: Math.floor(GATE_PROOF_TTL_MS / 1000),
   });
 
   return response;

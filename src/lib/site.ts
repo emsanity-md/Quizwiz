@@ -163,4 +163,11 @@ export const FOOTER_COLUMNS = [
       { label: "Help centre", href: "/help" },
     ],
   },
+  {
+    heading: "Legal",
+    links: [
+      { label: "Terms & Conditions", href: "/terms" },
+      { label: "Privacy Policy", href: "/privacy" },
+    ],
+  },
 ] as const;
