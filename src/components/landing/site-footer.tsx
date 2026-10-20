@@ -7,9 +7,10 @@ export function SiteFooter() {
   return (
     <footer className="mt-auto border-t border-border">
       <Container className="py-12">
-        {/* Two link columns, so two tracks. Counting these by hand is a trap:
-            a stale repeat(N) leaves an empty column and the links bunch left. */}
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.5fr)_repeat(2,minmax(0,1fr))] lg:gap-8">
+        {/* Three link columns, so three tracks. Counting these by hand is a
+            trap: a stale repeat(2) leaves an empty column and the links
+            bunch left. */}
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.5fr)_repeat(3,minmax(0,1fr))] lg:gap-8">
           <div>
             <p className="text-base font-semibold tracking-tight">Quizwiz</p>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">

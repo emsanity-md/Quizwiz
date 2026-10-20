@@ -9,12 +9,6 @@
 
 export const MINIMUM_AGE = 18;
 
-/** The cookie that says this browser has already passed the gate. */
-export const AGE_COOKIE = "quizwiz_age";
-
-/** How long a browser stays verified. A year, then the question again. */
-export const AGE_PROOF_TTL_MS = 365 * 24 * 60 * 60 * 1000;
-
 /** Nobody alive is older than this, and it keeps the date input sane. */
 export const MAX_AGE = 120;
 

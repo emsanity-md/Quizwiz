@@ -3,7 +3,7 @@
 import * as React from "react";
 
 import { MemoryGame } from "@/components/memory/memory-game";
-import { AgeGate } from "@/components/quiz/age-gate";
+import { Gate } from "@/components/quiz/gate";
 import { QuizHeader } from "@/components/quiz/quiz-header";
 import { TeaserFlow } from "@/components/teasers/teaser-flow";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -39,12 +39,9 @@ export function TeasersPage({ verified: passed }: { verified: boolean }) {
 
           <TabsContent value="twister" className="mt-8">
             <div className="mx-auto max-w-3xl">
-              <AgeGate
-                verified={verified}
-                onVerified={() => setVerified(true)}
-              >
+              <Gate verified={verified} onVerified={() => setVerified(true)}>
                 <TeaserFlow />
-              </AgeGate>
+              </Gate>
             </div>
           </TabsContent>
 

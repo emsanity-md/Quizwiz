@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { QuizFlow } from "@/components/quiz/quiz-flow";
-import { hasAgeProof } from "@/lib/quiz/age-proof";
+import { hasGateProof } from "@/lib/quiz/gate";
 
 export const metadata: Metadata = {
   title: "Take a quiz — Quizwiz",
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default async function QuizPage() {
   // Read on the server so the gate does not flash before it settles.
-  const verified = await hasAgeProof();
+  const verified = await hasGateProof();
 
   return <QuizFlow verified={verified} />;
 }

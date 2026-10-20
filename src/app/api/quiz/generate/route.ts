@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 
-import { hasAgeProof } from "@/lib/quiz/age-proof";
 import { findCategory } from "@/lib/quiz/categories";
 import { generateQuiz, type Flavour, type GenerateProgress } from "@/lib/quiz/generate";
+import { hasGateProof } from "@/lib/quiz/gate";
 import { MODEL } from "@/lib/quiz/nvidia";
 import { extractPdfText, PdfError } from "@/lib/quiz/pdf";
 import {
@@ -97,10 +97,11 @@ export async function POST(request: Request) {
   }
 
   // The gate on the page is a convenience. This is the boundary: the route
-  // refuses to spend anything for a browser that has not confirmed its age.
-  if (!(await hasAgeProof())) {
+  // refuses to spend anything for a browser that has not confirmed its age
+  // and accepted the terms.
+  if (!(await hasGateProof())) {
     return NextResponse.json(
-      { error: "Confirm your age before generating a quiz." },
+      { error: "Confirm your age and accept the terms before generating a quiz." },
       { status: 403 },
     );
   }
