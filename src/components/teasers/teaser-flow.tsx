@@ -2,7 +2,7 @@
 
 import * as React from "react";
 
-import { GeneratingProgress } from "@/components/quiz/generating-progress";
+import { GeneratingProgress, SETTLE_MS } from "@/components/quiz/generating-progress";
 import { TeaserCard, type TeaserReveal } from "@/components/teasers/teaser-card";
 import { TeaserSummary } from "@/components/teasers/teaser-summary";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -11,7 +11,11 @@ import { generateQuiz, QuizApiError } from "@/lib/quiz/client";
 import { TEASER_CATEGORY, TEASER_COUNT } from "@/lib/quiz/teasers";
 import type { GenerateResponse } from "@/lib/quiz/types";
 
-type Phase = "intro" | "generating" | "playing" | "summary";
+/**
+ * "finishing" is the beat between the puzzles being written and the round
+ * starting, so the thought line can settle and say how long the wait was.
+ */
+type Phase = "intro" | "generating" | "finishing" | "playing" | "summary";
 
 type Missed = { question: string; explanation: string };
 
@@ -39,6 +43,14 @@ export function TeaserFlow() {
 
   const abortRef = React.useRef<AbortController | null>(null);
   React.useEffect(() => () => abortRef.current?.abort(), []);
+
+  // The wait ends with a beat. The effect owns the timer, so leaving the
+  // screen takes the pending move with it.
+  React.useEffect(() => {
+    if (phase !== "finishing") return;
+    const timer = setTimeout(() => setPhase("playing"), SETTLE_MS);
+    return () => clearTimeout(timer);
+  }, [phase]);
 
   const question = round?.questions[index] ?? null;
 
@@ -70,7 +82,7 @@ export function TeaserFlow() {
       setStreak(0);
       setBestStreak(0);
       setMissed([]);
-      setPhase("playing");
+      setPhase("finishing");
     } catch (caught) {
       if (caught instanceof DOMException && caught.name === "AbortError") return;
       setError(
@@ -178,7 +190,7 @@ export function TeaserFlow() {
             </div>
           ) : null}
 
-          {phase === "generating" ? (
+          {phase === "generating" || phase === "finishing" ? (
             <div className="max-w-xl">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
                 Twisting
@@ -197,6 +209,7 @@ export function TeaserFlow() {
                   batches={progress.batches}
                   batchTotal={progress.batchTotal}
                   noun="puzzles"
+                  working={phase === "generating"}
                 />
               </div>
 
