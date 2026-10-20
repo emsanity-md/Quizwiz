@@ -162,6 +162,11 @@ type BatchRequest = {
   /** Built per attempt so a retry can ask for less and fit the budget. */
   instructionFor: (ask: number) => string;
   avoid: string[];
+  /**
+   * Stops the batch when the caller walks away. A cancelled quiz must not
+   * keep asking the model for questions.
+   */
+  signal?: AbortSignal;
 };
 
 /** Tries, and how much less to ask for each time. */
@@ -193,6 +198,9 @@ async function runBatch(
     : "";
 
   for (const [attempt, scale] of ATTEMPTS.entries()) {
+    // A cancelled quiz stops here rather than trying a smaller batch.
+    if (request.signal?.aborted) return [];
+
     // Halving the ask is the fix for a truncated answer: the model runs the
     // token budget out mid-question, and asking for fewer lets it finish.
     const ask = Math.max(3, Math.round(full * scale));
@@ -215,15 +223,24 @@ async function runBatch(
           system,
           user,
           temperature,
+          signal: request.signal,
           onTick: (tick) => report(tick.chars),
         }),
       );
       if (parsed.length > 0) return parsed;
     } catch {
+      // Retrying a cancelled request would spend the quota the cancellation
+      // was meant to save.
+      if (request.signal?.aborted) return [];
+
       try {
-        const parsed = parseBatch(await chat({ system, user, temperature }));
+        const parsed = parseBatch(
+          await chat({ system, user, temperature, signal: request.signal }),
+        );
         if (parsed.length > 0) return parsed;
       } catch {
+        if (request.signal?.aborted) return [];
+
         // Cold starts and truncation both land here. Try again, asking for less.
       }
     }
@@ -234,6 +251,7 @@ async function runBatch(
 
 async function runAll(
   requests: BatchRequest[],
+  signal: AbortSignal | undefined,
   onTick?: (batch: number, fraction: number) => void,
 ): Promise<RawQuestion[][]> {
   const results: RawQuestion[][] = new Array(requests.length);
@@ -241,6 +259,8 @@ async function runAll(
 
   async function worker() {
     while (cursor < requests.length) {
+      if (signal?.aborted) return;
+
       const index = cursor++;
       results[index] = await runBatch(requests[index], (fraction) =>
         onTick?.(index, fraction),
@@ -262,6 +282,7 @@ type PlanInput = {
   flavour: Flavour;
   sourceText?: string;
   existing: string[];
+  signal?: AbortSignal;
 };
 
 function planBatches({
@@ -271,6 +292,7 @@ function planBatches({
   flavour,
   sourceText,
   existing,
+  signal,
 }: PlanInput) {
   const full = FLAVOURS[flavour].batch;
   // One spare batch. Without it a seven question round is a single call, so one
@@ -303,7 +325,7 @@ function planBatches({
           : (ask: number) =>
               `Write ${ask} multiple-choice exam questions for a quiz in this field: ${category.label}. Concentrate on: ${topics}.`;
 
-    requests.push({ flavour, instructionFor, avoid: existing });
+    requests.push({ flavour, instructionFor, avoid: existing, signal });
   }
 
   return requests;
@@ -314,6 +336,11 @@ export type GenerateInput = {
   count: number;
   flavour?: Flavour;
   sourceText?: string;
+  /**
+   * Aborting this stops the model calls in flight and returns whatever was
+   * collected so far. A cancelled quiz must not keep costing quota.
+   */
+  signal?: AbortSignal;
 };
 
 /**
@@ -338,13 +365,16 @@ export async function generateQuiz(
   input: GenerateInput,
   onProgress?: ProgressReporter,
 ): Promise<Question[]> {
-  const { category, count, flavour = "exam", sourceText } = input;
+  const { category, count, flavour = "exam", sourceText, signal } = input;
 
   let collected: RawQuestion[] = [];
   const full = FLAVOURS[flavour].batch;
 
   for (let round = 0; round < MAX_ROUNDS; round += 1) {
     if (collected.length >= count) break;
+
+    // The caller has gone. Another round would be paid for and never read.
+    if (signal?.aborted) break;
 
     const requests = planBatches({
       category,
@@ -353,6 +383,7 @@ export async function generateQuiz(
       flavour,
       sourceText,
       existing: collected.map((item) => item.question),
+      signal,
     });
 
     // Per-batch streaming fractions, so a batch being written right now counts
@@ -388,7 +419,7 @@ export async function generateQuiz(
       });
     };
 
-    const settled = await runAll(requests, (batch, fraction) => {
+    const settled = await runAll(requests, signal, (batch, fraction) => {
       fractions.set(batch, fraction);
       report();
     });

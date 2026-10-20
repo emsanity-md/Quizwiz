@@ -3,6 +3,7 @@
 import * as React from "react";
 
 import { MemoryGame } from "@/components/memory/memory-game";
+import { AgeGate } from "@/components/quiz/age-gate";
 import { QuizHeader } from "@/components/quiz/quiz-header";
 import { TeaserFlow } from "@/components/teasers/teaser-flow";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,9 +12,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
  * One page, two games. The teaser twister spends a key on generation, the
  * memory game costs nothing and never waits, so they sit side by side rather
  * than behind separate routes.
+ *
+ * Only the twister is behind the age gate. The memory game calls no API,
+ * sends nothing, and stores nothing, so there is nothing to check.
  */
-export function TeasersPage() {
+export function TeasersPage({ verified: passed }: { verified: boolean }) {
   const [tab, setTab] = React.useState("twister");
+  // The gate starts where the server said it starts and moves on once the
+  // check has been made.
+  const [verified, setVerified] = React.useState(passed);
 
   return (
     <>
@@ -32,7 +39,12 @@ export function TeasersPage() {
 
           <TabsContent value="twister" className="mt-8">
             <div className="mx-auto max-w-3xl">
-              <TeaserFlow />
+              <AgeGate
+                verified={verified}
+                onVerified={() => setVerified(true)}
+              >
+                <TeaserFlow />
+              </AgeGate>
             </div>
           </TabsContent>
 

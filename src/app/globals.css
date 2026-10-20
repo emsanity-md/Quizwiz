@@ -161,6 +161,32 @@
   }
 }
 
+/* The theme opens in a circle from the toggle. The browser snapshots the page
+   either side of the change, and the new colours are clipped to a circle that
+   grows out from the button, so the switch reads as the page turning over
+   rather than as a colour swap. The attribute is only on the root while that
+   runs, so any other view transition on the page keeps its own animation. */
+:root[data-theme-anim="1"]::view-transition-old(root),
+:root[data-theme-anim="1"]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+:root[data-theme-anim="1"]::view-transition-new(root) {
+  animation: theme-reveal 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes theme-reveal {
+  from {
+    clip-path: circle(0 at var(--theme-cx, 50%) var(--theme-cy, 50%));
+  }
+  to {
+    clip-path: circle(
+      var(--theme-r, 100vmax) at var(--theme-cx, 50%) var(--theme-cy, 50%)
+    );
+  }
+}
+
 /* The scan line that sweeps the PDF preview while questions are written.
    It animates `top` on a zero-height element, so the line travels the full
    height of whatever the preview is sized to rather than a fixed pixel count,

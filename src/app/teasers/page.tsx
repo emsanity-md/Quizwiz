@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { TeasersPage } from "@/components/teasers/teasers-page";
+import { hasAgeProof } from "@/lib/quiz/age-proof";
 
 export const metadata: Metadata = {
   title: "Brain teasers and a memory game — Quizwiz",
@@ -8,6 +9,9 @@ export const metadata: Metadata = {
     "Seven lateral-thinking puzzles and riddles, plus a twelve-card memory game. No setup, no sign-up: press play and find out how many you twisted.",
 };
 
-export default function TeasersRoute() {
-  return <TeasersPage />;
+export default async function TeasersRoute() {
+  // Read on the server so the gate does not flash before it settles.
+  const verified = await hasAgeProof();
+
+  return <TeasersPage verified={verified} />;
 }

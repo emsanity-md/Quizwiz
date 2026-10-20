@@ -41,7 +41,39 @@ type ChatOptions = {
   user: string;
   maxTokens?: number;
   temperature?: number;
+  /**
+   * The caller's own abort signal. When it fires the request is dropped
+   * mid-flight, which is what stops a cancelled quiz from paying for
+   * questions nobody will ever read.
+   */
+  signal?: AbortSignal;
 };
+
+/**
+ * The timeout and the caller's signal share one controller, so either can
+ * stop the request. The caller is told which one it was, because the two
+ * deserve different messages.
+ */
+function withAbort(timeoutMs: number, external?: AbortSignal) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  const onAbort = () => controller.abort();
+  if (external) {
+    if (external.aborted) controller.abort();
+    else external.addEventListener("abort", onAbort, { once: true });
+  }
+
+  return {
+    signal: controller.signal,
+    /** True when the caller cancelled, rather than the timeout firing. */
+    cancelled: () => external?.aborted === true,
+    done: () => {
+      clearTimeout(timer);
+      external?.removeEventListener("abort", onAbort);
+    },
+  };
+}
 
 /** How much has been streamed so far, in characters, reasoning included. */
 export type StreamTick = { chars: number };
@@ -113,13 +145,12 @@ export async function chatStream({
   onTick,
   ...options
 }: ChatOptions & { onTick?: (tick: StreamTick) => void }): Promise<string> {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  const abort = withAbort(TIMEOUT_MS, options.signal);
 
   try {
     const response = await fetch(ENDPOINT, {
       method: "POST",
-      signal: controller.signal,
+      signal: abort.signal,
       headers: {
         Authorization: `Bearer ${apiKey()}`,
         "Content-Type": "application/json",
@@ -190,6 +221,9 @@ export async function chatStream({
   } catch (error) {
     if (error instanceof NvidiaError) throw error;
     if (error instanceof Error && error.name === "AbortError") {
+      if (abort.cancelled()) {
+        throw new NvidiaError("The quiz was cancelled.", 499);
+      }
       throw new NvidiaError("The model took too long to answer.", 504);
     }
     throw new NvidiaError(
@@ -197,7 +231,7 @@ export async function chatStream({
       502,
     );
   } finally {
-    clearTimeout(timer);
+    abort.done();
   }
 }
 
@@ -210,13 +244,12 @@ export async function chatStream({
  * without a retry round trip.
  */
 export async function chat(options: ChatOptions): Promise<string> {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  const abort = withAbort(TIMEOUT_MS, options.signal);
 
   try {
     const response = await fetch(ENDPOINT, {
       method: "POST",
-      signal: controller.signal,
+      signal: abort.signal,
       headers: {
         Authorization: `Bearer ${apiKey()}`,
         "Content-Type": "application/json",
@@ -255,6 +288,9 @@ export async function chat(options: ChatOptions): Promise<string> {
   } catch (error) {
     if (error instanceof NvidiaError) throw error;
     if (error instanceof Error && error.name === "AbortError") {
+      if (abort.cancelled()) {
+        throw new NvidiaError("The quiz was cancelled.", 499);
+      }
       throw new NvidiaError("The model took too long to answer.", 504);
     }
     throw new NvidiaError(
@@ -262,6 +298,6 @@ export async function chat(options: ChatOptions): Promise<string> {
       502,
     );
   } finally {
-    clearTimeout(timer);
+    abort.done();
   }
 }

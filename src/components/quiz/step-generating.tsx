@@ -15,6 +15,8 @@ type Props = {
   total: number;
   batches: number;
   batchTotal: number;
+  /** False once the questions are written, so the thought line can settle. */
+  working?: boolean;
   onCancel: () => void;
 };
 
@@ -26,6 +28,7 @@ export function StepGenerating({
   total,
   batches,
   batchTotal,
+  working = true,
   onCancel,
 }: Props) {
   const category = CATEGORIES.find((item) => item.id === categoryId);
@@ -61,6 +64,8 @@ export function StepGenerating({
             batches={batches}
             batchTotal={batchTotal}
             noun="questions"
+            working={working}
+            file={file}
           />
         </div>
 
